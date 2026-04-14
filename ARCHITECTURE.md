@@ -1,23 +1,47 @@
-# Architecture Overview
+# Addon Architecture Overview
 
-This project is a preset-driven simulation platform.
+This project is organized around clear boundaries between Blender UX, simulation runtime, compute backend, and persisted artifacts.
 
-## Runtime pipeline
+## Runtime flow
 
-1. Preset compiles into `SimulationSpec`.
-2. `SimulationRuntime` executes with adaptive dt + artifact writing.
-3. Backend (`backends/warp`) performs SPH + gravity stepping.
-4. Cache + diagnostics artifacts are written for restart/inspection.
-5. Blender addon reads cache snapshots and updates viewport preview objects.
+1. A preset compiles to a `SimulationSpec`.
+2. `SimulationRuntime` executes adaptive steps and writes frame artifacts.
+3. The Warp backend (`backends/warp/`) performs SPH + gravity integration.
+4. Diagnostics/manifests/cache snapshots are emitted.
+5. The Blender addon loads snapshots and updates viewport preview objects.
 
 ## Boundary map
 
-- `addon/`: UI shell only
-- `sim_core/`: contracts, runtime, diagnostics, initial condition builders
-- `backends/warp/`: compute kernels and adapter
-- `presets/`: authored scenario compilation
-- `io/`: schema docs
+- `addon/`
+  - Blender operators, panels, and scene settings.
+  - Must not embed solver internals.
+- `sim_core/`
+  - Runtime orchestration, contracts, diagnostics, initial conditions, and IO validation.
+  - Defines interfaces consumed by addon and backends.
+- `backends/warp/`
+  - Warp-specific kernel and adapter implementation.
+  - Conforms to `sim_core` backend contracts.
+- `presets/`
+  - Scenario authoring layer compiling authored parameters into `SimulationSpec`.
+- `io/`
+  - Cache/manifest schema and compatibility expectations.
 
-## Future node compatibility
+## Presets and backends
 
-A node system should compile to `SimulationSpec` without replacing runtime/backend contracts.
+Presets are backend-agnostic scenario definitions. Backends execute specs without changing preset semantics.
+This keeps authored scenarios portable while allowing backend evolution.
+
+## IO and diagnostics boundaries
+
+- Cache snapshots (`<output_dir>/cache/frame_XXXXX.json`) are the handoff between runtime and addon display.
+- Run manifests and diagnostics are runtime outputs for reproducibility, validation, and manual triage.
+- Display coloring (`Material`, `Provenance`, `Density`) depends on shipped cache channels.
+
+## Moon preset status
+
+The shipped `moon_birth_theia` path is VFX-oriented and approximate by design.
+See:
+
+- `docs/MOON_BIRTH_MODEL.md`
+- `docs/MOON_BIRTH_LIMITATIONS.md`
+- `docs/RUN_DIAGNOSTICS.md`
