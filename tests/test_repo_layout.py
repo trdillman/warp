@@ -27,15 +27,10 @@ ALLOWED_TOP_LEVEL_ENTRIES = {
     "CLAUDE.md",
     "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md",
-    "DECISIONS.md",
     "LICENSE.md",
-    "NOTES.md",
-    "PLAN.md",
     "PUBLICATIONS.md",
     "README.md",
     "SECURITY.md",
-    "START_HERE.md",
-    "TODO.md",
     "VERSION.md",
     "addon",
     "asv",
@@ -80,12 +75,6 @@ REQUIRED_TOP_LEVEL_ENTRIES = {
 
 ALLOWED_WORKFLOW_FILES = {
     "blender-addon-release.yml",
-    "build-warp-builder-images.yml",
-    "ci.yml",
-    "codeql.yml",
-    "draft-release.yml",
-    "pr.yml",
-    "sphinx.yml",
 }
 
 
