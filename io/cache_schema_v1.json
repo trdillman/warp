@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AstroSim Cache Snapshot v1",
+  "type": "object",
+  "required": ["schema_version", "frame", "time", "positions", "velocities", "masses", "materials"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "cache_snapshot_v1"},
+    "frame": {"type": "integer", "minimum": 0},
+    "time": {"type": "number"},
+    "positions": {"type": "array"},
+    "velocities": {"type": "array"},
+    "masses": {"type": "array"},
+    "materials": {"type": "array", "items": {"type": "string"}}
+  }
+}
