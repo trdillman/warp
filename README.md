@@ -1,6 +1,6 @@
-# Cinematic Astrophysical Simulation Platform (Warp Backend)
+# Cinematic Astro Sim Blender Addon
 
-This repository is the reusable core of a long-lived Blender addon platform for cinematic astrophysical simulations.
+This repository contains the standalone Blender addon project for cinematic astrophysical simulations, including its embedded simulation core.
 
 ## Current status
 
@@ -14,15 +14,18 @@ The `moon_birth_theia` preset now runs a first real VFX-oriented giant-impact pa
 - restartable cache snapshots with material/provenance channels
 - debris diagnostics and run manifests
 
-## Architecture boundaries
+## Repository layout
 
-- `addon/`: Blender shell only
+- `addon/`: Blender addon package and Blender integration entrypoints
 - `sim_core/`: contracts, runtime, diagnostics, IO validation, initial conditions
 - `backends/warp/`: Warp kernels + adapter
 - `presets/`: scenario authorship compiling into `SimulationSpec`
 - `io/`: schema and format docs
 - `scripts/`: headless run and inspection tools
 - `tests/`: solver path + architecture guardrails
+
+The shipped release artifact is the Blender addon zip:
+`cinematic_astro_sim_blender_addon-vX.Y.Z.zip` (plus matching `.sha256`).
 
 ## Quick commands
 

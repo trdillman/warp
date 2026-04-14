@@ -6,7 +6,7 @@ install addon -> run preview -> see particles -> reload -> change display mode.
 ## Preconditions
 
 - Blender 4.0+
-- Warp repository checkout
+- Cinematic Astro Sim Blender addon repository checkout
 - `uv` available
 
 ## Steps
