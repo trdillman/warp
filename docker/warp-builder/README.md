@@ -176,21 +176,9 @@ docker buildx build --platform linux/amd64 -t warp-builder:cuda13 -f Dockerfile 
 
 ## Rebuilding Images
 
-Images are automatically built by the workflow at `.github/workflows/build-warp-builder-images.yml`.
-
-**Each workflow run builds:**
-
-- CUDA 12.9.1 (x86_64 + aarch64)
-- CUDA 13.2.0 (x86_64 + aarch64)
-- All 4 builds run in parallel (~60 minutes total)
-
-**To trigger a rebuild:**
-
-1. Go to Actions → Build Warp Builder Images
-2. Click "Run workflow"
-3. Both CUDA versions will be built and published
-
-To change CUDA versions, edit the matrix in the workflow file.
+This repository no longer ships a dedicated GitHub Actions workflow for Warp builder image publication.
+If you need fresh images, build and publish them manually (or from your own CI) using the
+`docker/warp-builder/Dockerfile` and the local build command above.
 
 ## Architecture Support
 
