@@ -1,5 +1,6 @@
 """Blender addon shell for the cinematic astrophysical simulation platform."""
 
+
 from __future__ import annotations
 
 import sys
