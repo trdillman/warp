@@ -1,47 +1,41 @@
 # Addon Architecture Overview
 
-This project is organized around clear boundaries between Blender UX, simulation runtime, compute backend, and persisted artifacts.
+This repository is organized as a Blender addon project with a bundled Windows Warp runtime in release artifacts.
 
 ## Runtime flow
 
 1. A preset compiles to a `SimulationSpec`.
-2. `SimulationRuntime` executes adaptive steps and writes frame artifacts.
-3. The Warp backend (`backends/warp/`) performs SPH + gravity integration.
-4. Diagnostics/manifests/cache snapshots are emitted.
-5. The Blender addon loads snapshots and updates viewport preview objects.
+2. `SimulationRuntime` executes adaptive steps and writes cache snapshots.
+3. The Warp backend in `backends/warp/` runs the SPH + gravity integration.
+4. The addon loads snapshots and refreshes viewport preview objects.
 
-## Boundary map
+## Boundaries
 
 - `addon/`
   - Blender operators, panels, and scene settings.
-  - Must not embed solver internals.
+  - Must stay focused on Blender UX and snapshot display.
 - `sim_core/`
-  - Runtime orchestration, contracts, diagnostics, initial conditions, and IO validation.
-  - Defines interfaces consumed by addon and backends.
+  - Runtime orchestration, contracts, diagnostics, and snapshot writing.
+  - Owns interfaces shared by presets, addon code, and compute backends.
 - `backends/warp/`
-  - Warp-specific kernel and adapter implementation.
-  - Conforms to `sim_core` backend contracts.
+  - Warp-specific execution adapter.
+  - Assumes a packaged `warp` runtime is available at import time.
 - `presets/`
-  - Scenario authoring layer compiling authored parameters into `SimulationSpec`.
+  - Authored simulation scenarios compiled into runtime specs.
 - `io/`
-  - Cache/manifest schema and compatibility expectations.
+  - Cache schema and compatibility expectations.
+- `scripts/build_blender_addon_zip.py`
+  - Release packaging entrypoint.
+  - Downloads or reuses a pinned Windows Warp wheel and bundles the `warp/` package into the addon zip.
 
-## Presets and backends
+## Packaging model
 
-Presets are backend-agnostic scenario definitions. Backends execute specs without changing preset semantics.
-This keeps authored scenarios portable while allowing backend evolution.
+- The repo does not vendor upstream Warp source code.
+- The Windows release artifact is self-contained and bundles the pinned Warp runtime from an external wheel.
+- Local development can override the pinned wheel with `ASTROSIM_WARP_RUNTIME_WHEEL` or `--runtime-wheel`.
 
-## IO and diagnostics boundaries
+## Snapshot handoff
 
-- Cache snapshots (`<output_dir>/cache/frame_XXXXX.json`) are the handoff between runtime and addon display.
-- Run manifests and diagnostics are runtime outputs for reproducibility, validation, and manual triage.
-- Display coloring (`Material`, `Provenance`, `Density`) depends on shipped cache channels.
-
-## Moon preset status
-
-The shipped `moon_birth_theia` path is VFX-oriented and approximate by design.
-See:
-
-- `docs/MOON_BIRTH_MODEL.md`
-- `docs/MOON_BIRTH_LIMITATIONS.md`
-- `docs/RUN_DIAGNOSTICS.md`
+- Cache snapshots live at `<output_dir>/cache/frame_XXXXX.json`.
+- These snapshots are the interface between the simulation runtime and Blender display code.
+- Display coloring (`Material`, `Provenance`, `Density`) depends on channels preserved in those cache files.

@@ -13,7 +13,7 @@ bl_info = {
     "version": ADDON_VERSION,
     "blender": (4, 0, 0),
     "location": "View3D > Sidebar > Astro Sim",
-    "description": "Standalone Blender addon with an embedded Warp-backed simulation core.",
+    "description": "Standalone Blender addon with a bundled Windows Warp runtime.",
     "category": "Simulation",
 }
 

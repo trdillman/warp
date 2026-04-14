@@ -6,15 +6,16 @@ install -> run preview -> verify particles -> reload -> verify display modes.
 ## Preconditions
 
 - Blender 4.0+
-- Cinematic Astro Sim Blender addon repository checkout
+- Windows environment
 - `uv` available
+- either internet access for the pinned runtime download or `ASTROSIM_WARP_RUNTIME_WHEEL` set to a local wheel path
 
 ## Test steps
 
-1. Build addon zip:
+1. Build the addon zip:
    - `uv run scripts/build_blender_addon_zip.py`
-   - Verify `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip` exists.
-   - Verify `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip.sha256` exists.
+   - Verify `dist/cinematic_astro_sim_blender_addon-vX.Y.Z-windows.zip` exists.
+   - Verify `dist/cinematic_astro_sim_blender_addon-vX.Y.Z-windows.zip.sha256` exists.
 2. Install the addon zip in Blender Preferences.
 3. Enable `Cinematic Astro Sim`.
 4. In a new scene, open the `Astro Sim` panel.
@@ -29,13 +30,13 @@ install -> run preview -> verify particles -> reload -> verify display modes.
 
 ## Expected results
 
-- Preview run completes quickly compared to a full run.
+- Preview run completes without requiring a repo-local `warp/` checkout.
 - Cache files are present under `<output_dir>/cache/`.
 - `AstroSimPreview` is created and updates on reload.
 - Display mode changes color assignment.
 
 ## Known limitations
 
-- Cinematic shading pipeline is not finalized.
-- Timeline playback operator is not shipped in this milestone.
-- Physics model is VFX-first and approximate (see `docs/MOON_BIRTH_LIMITATIONS.md`).
+- Cinematic shading is still minimal.
+- Timeline playback tooling is not part of this addon package.
+- The physics model is VFX-first and approximate; see `docs/MOON_BIRTH_LIMITATIONS.md`.

@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   build-addon-release:
-    runs-on: ubuntu-24.04
+    runs-on: windows-2022
 
     steps:
       - name: Checkout repository
@@ -34,19 +34,27 @@ jobs:
 
       - name: Resolve addon version
         id: version
+        shell: pwsh
         run: |
-          ADDON_VERSION="$(uv run scripts/build_blender_addon_zip.py --print-version)"
-          echo "addon_version=${ADDON_VERSION}" >> "$GITHUB_OUTPUT"
-          echo "zip_name=cinematic_astro_sim_blender_addon-v${ADDON_VERSION}.zip" >> "$GITHUB_OUTPUT"
+          $addonVersion = uv run scripts/build_blender_addon_zip.py --print-version
+          "addon_version=$addonVersion" >> $env:GITHUB_OUTPUT
+          "zip_name=cinematic_astro_sim_blender_addon-v$addonVersion-windows.zip" >> $env:GITHUB_OUTPUT
+
+      - name: Resolve pinned runtime wheel
+        id: runtime
+        shell: pwsh
+        run: |
+          $wheelPath = uv run scripts/build_blender_addon_zip.py --print-runtime-wheel
+          "wheel_path=$wheelPath" >> $env:GITHUB_OUTPUT
 
       - name: Validate tag version
         if: startsWith(github.ref, 'refs/tags/addon-v')
+        shell: pwsh
         run: |
-          TAG_VERSION="${GITHUB_REF_NAME#addon-v}"
-          if [ "${TAG_VERSION}" != "${{ steps.version.outputs.addon_version }}" ]; then
-            echo "Tag version (${TAG_VERSION}) does not match addon bl_info version (${{ steps.version.outputs.addon_version }})."
-            exit 1
-          fi
+          $tagVersion = $env:GITHUB_REF_NAME.Substring(6)
+          if ($tagVersion -ne "${{ steps.version.outputs.addon_version }}") {
+            throw "Tag version ($tagVersion) does not match addon version (${{ steps.version.outputs.addon_version }})."
+          }
 
       - name: Build addon artifact
         run: uv run scripts/build_blender_addon_zip.py
@@ -63,10 +71,11 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/addon-v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
         run: |
-          gh release create "${GITHUB_REF_NAME}" \
-            "dist/${{ steps.version.outputs.zip_name }}" \
-            "dist/${{ steps.version.outputs.zip_name }}.sha256" \
-            --verify-tag \
-            --title "Blender Addon ${GITHUB_REF_NAME}" \
-            --notes "Standalone Blender addon release artifact."
+          gh release create "${env:GITHUB_REF_NAME}" `
+            "dist/${{ steps.version.outputs.zip_name }}" `
+            "dist/${{ steps.version.outputs.zip_name }}.sha256" `
+            --verify-tag `
+            --title "Blender Addon ${env:GITHUB_REF_NAME}" `
+            --notes "Windows Blender addon release artifact with bundled Warp runtime."
