@@ -85,7 +85,6 @@ def detect_addon_version() -> str:
                         if isinstance(version, tuple):
                             return ".".join(str(int(part)) for part in version)
 
-
     raise RuntimeError("Unable to read addon version from bl_info in addon/__init__.py")
 
 
