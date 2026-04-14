@@ -228,6 +228,22 @@ warp/examples/tile
     language_reference/builtins
 
 .. toctree::
+    :maxdepth: 1
+    :caption: Cinematic Astro Sim (Experimental)
+
+    SIMULATION_SPEC
+    PRESET_CONTRACT
+    BACKEND_CONTRACT
+    BLENDER_INTEGRATION_BOUNDARY
+    BLENDER_QUICKSTART
+    BLENDER_MANUAL_TEST
+    RUN_DIAGNOSTICS
+    SESSION_CONTINUATION
+    MOON_BIRTH_MODEL
+    MOON_BIRTH_LIMITATIONS
+    RELEASING
+
+.. toctree::
     :hidden:
     :caption: Project Links
 
