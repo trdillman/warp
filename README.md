@@ -27,6 +27,7 @@ The `moon_birth_theia` preset now runs a first real VFX-oriented giant-impact pa
 ## Quick commands
 
 ```bash
+uv run scripts/build_blender_addon_zip.py
 uv run scripts/list_presets.py
 uv run scripts/validate_preset.py moon_birth_theia
 uv run scripts/run_preset.py --preset-id moon_birth_theia --steps 40 --output-dir /tmp/astrosim --print-spec
@@ -43,3 +44,6 @@ uv run -m unittest tests.test_initial_conditions tests.test_vertical_slice tests
 - `docs/MOON_BIRTH_MODEL.md`
 - `docs/MOON_BIRTH_LIMITATIONS.md`
 - `docs/RUN_DIAGNOSTICS.md`
+- `docs/BLENDER_QUICKSTART.md`
+- `docs/BLENDER_MANUAL_TEST.md`
+- `docs/RELEASING.md`

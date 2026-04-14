@@ -8,6 +8,7 @@ This project is a preset-driven simulation platform.
 2. `SimulationRuntime` executes with adaptive dt + artifact writing.
 3. Backend (`backends/warp`) performs SPH + gravity stepping.
 4. Cache + diagnostics artifacts are written for restart/inspection.
+5. Blender addon reads cache snapshots and updates viewport preview objects.
 
 ## Boundary map
 
