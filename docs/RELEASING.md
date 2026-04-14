@@ -1,7 +1,6 @@
 # Releasing the Blender Addon
 
-This project publishes a **standalone Blender addon zip** from the main repository.
-No separate addon repository is required.
+This repository publishes a **standalone Blender addon zip** that includes the embedded simulation core.
 
 ## Version source of truth
 
@@ -21,6 +20,8 @@ Outputs:
 
 - `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip`
 - `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip.sha256`
+
+Keep this artifact naming unchanged so local builds, CI uploads, and GitHub release assets remain aligned.
 
 Optional utilities:
 
