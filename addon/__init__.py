@@ -1,4 +1,4 @@
-"""Blender addon shell for the cinematic astrophysical simulation platform."""
+"""Standalone Blender addon for cinematic astrophysical simulation workflows."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ bl_info = {
     "version": ADDON_VERSION,
     "blender": (4, 0, 0),
     "location": "View3D > Sidebar > Astro Sim",
-    "description": "Thin Blender shell over a headless simulation core backed by Warp.",
+    "description": "Standalone Blender addon with an embedded Warp-backed simulation core.",
     "category": "Simulation",
 }
 

@@ -1,4 +1,4 @@
-# Cinematic Astro Sim Blender Addon (Warp Backend)
+# Cinematic Astro Sim Blender Addon
 
 Cinematic Astro Sim is a Blender addon for running and previewing cinematic astrophysical simulations.
 This repository packages:

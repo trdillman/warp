@@ -6,7 +6,7 @@ install -> run preview -> verify particles -> reload -> verify display modes.
 ## Preconditions
 
 - Blender 4.0+
-- Warp repository checkout
+- Cinematic Astro Sim Blender addon repository checkout
 - `uv` available
 
 ## Test steps
