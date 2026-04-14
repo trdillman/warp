@@ -1,7 +1,7 @@
 # Blender Manual Smoke Test
 
-This smoke test verifies the first user-facing Blender milestone:
-install addon -> run preview -> see particles -> reload -> change display mode.
+This smoke test validates the user-facing addon path:
+install -> run preview -> verify particles -> reload -> verify display modes.
 
 ## Preconditions
 
@@ -9,33 +9,33 @@ install addon -> run preview -> see particles -> reload -> change display mode.
 - Warp repository checkout
 - `uv` available
 
-## Steps
+## Test steps
 
 1. Build addon zip:
    - `uv run scripts/build_blender_addon_zip.py`
    - Verify `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip` exists.
-   - Verify matching checksum `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip.sha256` exists.
-2. Install addon from zip in Blender Preferences.
+   - Verify `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip.sha256` exists.
+2. Install the addon zip in Blender Preferences.
 3. Enable `Cinematic Astro Sim`.
-4. In a new scene, open `Astro Sim` sidebar panel.
+4. In a new scene, open the `Astro Sim` panel.
 5. Select preset `Moon Birth / Theia Impact`.
-6. Confirm `Use Preview Mode` is enabled with low values (defaults are suitable).
+6. Confirm `Use Preview Mode` is enabled.
 7. Click `Run Preview`.
-8. Wait for completion and verify `AstroSimPreview` appears in the scene.
-9. Click `Load Latest Snapshot`; verify the same object updates from cache.
-10. Set `Display By = Material`, click `Refresh Display`, verify colors change.
-11. Set `Display By = Density`, click `Refresh Display`, verify colors change.
-12. Set `Display By = Provenance`, click `Refresh Display`, verify colors change.
+8. Verify `AstroSimPreview` appears after completion.
+9. Click `Load Latest Snapshot`; verify the same object refreshes from cache.
+10. Set `Display By = Material`, click `Refresh Display`, verify colors update.
+11. Set `Display By = Density`, click `Refresh Display`, verify colors update.
+12. Set `Display By = Provenance`, click `Refresh Display`, verify colors update.
 
 ## Expected results
 
-- Preview run finishes quickly compared to default full run.
-- Cache files appear under `<output_dir>/cache/`.
-- `AstroSimPreview` exists and updates when reloading/refreshing.
-- Display mode affects colors.
+- Preview run completes quickly compared to a full run.
+- Cache files are present under `<output_dir>/cache/`.
+- `AstroSimPreview` is created and updates on reload.
+- Display mode changes color assignment.
 
-## Known limitations for this milestone
+## Known limitations
 
-- No polished cinematic shading path yet.
-- No timeline playback operator yet; this pass supports latest-snapshot loading and refresh.
-- Physics model remains VFX-first and approximate (see `docs/MOON_BIRTH_LIMITATIONS.md`).
+- Cinematic shading pipeline is not finalized.
+- Timeline playback operator is not shipped in this milestone.
+- Physics model is VFX-first and approximate (see `docs/MOON_BIRTH_LIMITATIONS.md`).
