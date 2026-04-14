@@ -61,7 +61,6 @@ Behavior:
 The workflow opts into Node.js 24 for JavaScript-based actions via
 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` to avoid Node.js 20 deprecation issues.
 
-
 ## Manual release procedure
 
 1. Update `bl_info["version"]` in `addon/__init__.py`.
