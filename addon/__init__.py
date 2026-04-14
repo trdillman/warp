@@ -5,10 +5,12 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+ADDON_VERSION = (0, 2, 0)
+
 bl_info = {
     "name": "Cinematic Astro Sim",
     "author": "Codex Scaffold",
-    "version": (0, 2, 0),
+    "version": ADDON_VERSION,
     "blender": (4, 0, 0),
     "location": "View3D > Sidebar > Astro Sim",
     "description": "Thin Blender shell over a headless simulation core backed by Warp.",

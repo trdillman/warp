@@ -6,6 +6,7 @@ No separate addon repository is required.
 ## Version source of truth
 
 Addon release version comes from `bl_info["version"]` in `addon/__init__.py`.
+The file also exposes `ADDON_VERSION` so version updates happen in one place.
 
 - Example: `"version": (0, 2, 0)` -> `0.2.0`
 - Release tag must match this version (see tag format below).

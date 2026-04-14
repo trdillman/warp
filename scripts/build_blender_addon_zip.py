@@ -60,15 +60,32 @@ def detect_addon_version() -> str:
 
     source = ADDON_INIT.read_text(encoding="utf-8")
     module = ast.parse(source, filename=str(ADDON_INIT))
+    addon_version: tuple[int, ...] | None = None
+
     for node in module.body:
-        if isinstance(node, ast.Assign):
-            for target in node.targets:
-                if isinstance(target, ast.Name) and target.id == "bl_info":
-                    value = ast.literal_eval(node.value)
-                    version = value.get("version")
-                    if not isinstance(version, tuple):
-                        break
-                    return ".".join(str(int(part)) for part in version)
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id == "ADDON_VERSION":
+                value = ast.literal_eval(node.value)
+                if isinstance(value, tuple):
+                    addon_version = tuple(int(part) for part in value)
+                    return ".".join(str(part) for part in addon_version)
+
+    for node in module.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id == "bl_info":
+                if not isinstance(node.value, ast.Dict):
+                    continue
+                for key_node, value_node in zip(node.value.keys, node.value.values, strict=False):
+                    if isinstance(key_node, ast.Constant) and key_node.value == "version":
+                        version = ast.literal_eval(value_node)
+                        if isinstance(version, tuple):
+                            return ".".join(str(int(part)) for part in version)
+
+
     raise RuntimeError("Unable to read addon version from bl_info in addon/__init__.py")
 
 
