@@ -6,16 +6,17 @@
 uv run scripts/build_blender_addon_zip.py
 ```
 
-Expected artifact:
+Expected artifacts:
 
-- `dist/cinematic_astro_sim_blender_addon.zip`
+- `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip`
+- `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip.sha256`
 
 ## Install in Blender
 
 1. Open Blender.
 2. Go to `Edit > Preferences > Add-ons`.
 3. Click `Install...`.
-4. Select `dist/cinematic_astro_sim_blender_addon.zip`.
+4. Select `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip`.
 5. Enable `Cinematic Astro Sim`.
 
 ## First preview run

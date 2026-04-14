@@ -12,8 +12,9 @@ class TestBlenderPackaging(unittest.TestCase):
     def test_build_addon_zip_contains_expected_modules(self):
         with tempfile.TemporaryDirectory() as tmp:
             artifact = Path(tmp) / "addon.zip"
-            build_addon_zip(artifact)
+            _, checksum = build_addon_zip(artifact)
             self.assertTrue(artifact.exists())
+            self.assertTrue(checksum.exists())
 
             with ZipFile(artifact, "r") as zf:
                 names = set(zf.namelist())

@@ -13,7 +13,8 @@ install addon -> run preview -> see particles -> reload -> change display mode.
 
 1. Build addon zip:
    - `uv run scripts/build_blender_addon_zip.py`
-   - Verify `dist/cinematic_astro_sim_blender_addon.zip` exists.
+   - Verify `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip` exists.
+   - Verify matching checksum `dist/cinematic_astro_sim_blender_addon-vX.Y.Z.zip.sha256` exists.
 2. Install addon from zip in Blender Preferences.
 3. Enable `Cinematic Astro Sim`.
 4. In a new scene, open `Astro Sim` sidebar panel.

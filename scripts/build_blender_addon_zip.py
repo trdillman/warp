@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import ast
+import hashlib
 import shutil
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -9,6 +11,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 ADDON_NAME = "cinematic_astro_sim"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DIST_DIR = REPO_ROOT / "dist"
+ADDON_INIT = REPO_ROOT / "addon" / "__init__.py"
 
 INCLUDE_DIRS = ["sim_core", "presets", "backends", "io"]
 ADDON_FILES = ["__init__.py", "operators.py", "props.py", "ui.py", "cache_bridge.py", "visualization.py"]
@@ -52,22 +55,66 @@ def _write_deterministic_zip(source_dir: Path, output_zip: Path) -> None:
             zf.writestr(info, path.read_bytes())
 
 
-def build_addon_zip(output_path: Path | None = None) -> Path:
-    artifact = output_path or DIST_DIR / f"{ADDON_NAME}_blender_addon.zip"
+def detect_addon_version() -> str:
+    """Return addon version from ``addon/__init__.py`` bl_info."""
+
+    source = ADDON_INIT.read_text(encoding="utf-8")
+    module = ast.parse(source, filename=str(ADDON_INIT))
+    for node in module.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "bl_info":
+                    value = ast.literal_eval(node.value)
+                    version = value.get("version")
+                    if not isinstance(version, tuple):
+                        break
+                    return ".".join(str(int(part)) for part in version)
+    raise RuntimeError("Unable to read addon version from bl_info in addon/__init__.py")
+
+
+def build_release_filenames(version: str) -> tuple[str, str]:
+    """Return addon zip + checksum filenames for a release version."""
+
+    zip_name = f"{ADDON_NAME}_blender_addon-v{version}.zip"
+    checksum_name = f"{zip_name}.sha256"
+    return zip_name, checksum_name
+
+
+def write_sha256(path: Path) -> Path:
+    """Write sha256 checksum file adjacent to a build artifact."""
+
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    checksum_path = path.with_name(f"{path.name}.sha256")
+    checksum_path.write_text(f"{digest}  {path.name}\n", encoding="utf-8")
+    return checksum_path
+
+
+def build_addon_zip(output_path: Path | None = None, version: str | None = None) -> tuple[Path, Path]:
+    active_version = version or detect_addon_version()
+    default_name, _ = build_release_filenames(active_version)
+    artifact = output_path or DIST_DIR / default_name
     with TemporaryDirectory() as tmp:
         staging = Path(tmp)
         addon_root = build_staging_tree(staging)
         _write_deterministic_zip(addon_root, artifact)
-    return artifact
+    checksum = write_sha256(artifact)
+    return artifact, checksum
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build installable Blender addon zip artifact")
     parser.add_argument("--output", type=Path, default=None, help="Optional output zip path")
+    parser.add_argument("--version", default=None, help="Optional version string for release naming")
+    parser.add_argument("--print-version", action="store_true", help="Print addon bl_info version and exit")
     args = parser.parse_args()
 
-    artifact = build_addon_zip(args.output)
+    if args.print_version:
+        print(detect_addon_version())
+        return
+
+    artifact, checksum = build_addon_zip(args.output, version=args.version)
     print(f"Wrote addon zip: {artifact}")
+    print(f"Wrote checksum: {checksum}")
 
 
 if __name__ == "__main__":

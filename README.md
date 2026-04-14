@@ -46,3 +46,4 @@ uv run -m unittest tests.test_initial_conditions tests.test_vertical_slice tests
 - `docs/RUN_DIAGNOSTICS.md`
 - `docs/BLENDER_QUICKSTART.md`
 - `docs/BLENDER_MANUAL_TEST.md`
+- `docs/RELEASING.md`
