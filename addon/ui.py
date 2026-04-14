@@ -18,5 +18,6 @@ class ASTROSIM_PT_panel(bpy.types.Panel):
         layout.prop(settings, "steps")
         layout.prop(settings, "dt")
         layout.prop(settings, "save_every")
+        layout.prop(settings, "display_mode")
         layout.prop(settings, "output_dir")
         layout.operator("astrosim.run_preset")

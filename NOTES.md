@@ -1,27 +1,25 @@
 # NOTES
 
-## Current preset inventory
+## Repo state in this pass
 
-- `moon_birth_theia`
-- `asteroid_belt_disruption`
+- Moon Birth path moved from simple gravity placeholder to real SPH+gravity impact path.
+- Second preset remains lightweight and reuses same architecture.
 
-Both compile to `SimulationSpec` and run through the same runtime/backend path.
+## What is now real
 
-## SimulationSpec observations
+- Differentiated body initialization with provenance/material IDs
+- Pre-impact settling routine
+- SPH-style density/pressure + artificial viscosity
+- Softened self-gravity
+- Adaptive timestep limiting
+- Cache + diagnostics + run manifest outputs
 
-- Explicit sections (`particle_init`, `materials`, `solver_config`, `runtime`, `backend_requirements`, `cache_settings`) improve inspectability.
-- The same IR can support future node-authoring by treating nodes as another compiler frontend.
+## What remains simplified
 
-## Guardrails added
+- EOS is analytic, not ANEOS-complete
+- Gravity is all-pairs, not scalable tree/FMM
+- Debris classification is approximate and VFX-oriented
 
-- Tests enforce no backend leakage into `addon/` and `presets/`.
-- Tests enforce preset compilation to `SimulationSpec`.
-- Tests enforce cache schema version + required fields.
+## Continuation hint
 
-## Deferred work (intentional)
-
-- Full multi-material SPH
-- ANEOS/table fidelity
-- Advanced long-range gravity and adaptive timestep research
-
-These remain extension points, not this pass.
+Prioritize stability/performance and diagnostics tooling before fidelity-heavy EOS/gravity upgrades.

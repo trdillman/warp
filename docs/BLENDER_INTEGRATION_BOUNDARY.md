@@ -1,9 +1,9 @@
 # Blender Integration Boundary
 
-`addon/` should remain a thin shell:
+`addon/` remains a shell:
 
-- expose preset selection and runtime parameters
-- build a `SimulationRunRequest`
-- call shared runtime entrypoints in `sim_core.app`
+- select preset and run options
+- build `SimulationRunRequest`
+- call `sim_core.app.run_preset`
 
-Do not put simulation algorithms, backend selection logic, or file-format rules in Blender classes.
+No hydrodynamics, gravity, EOS, or diagnostics logic should live in Blender UI code.

@@ -1,18 +1,22 @@
 # SimulationSpec Contract
 
-`SimulationSpec` is the backend-agnostic intermediate representation.
+`SimulationSpec` is the backend-agnostic intermediate representation consumed by runtime/backends.
 
-Fields include:
+Current required sections:
 
-- `spec_version`
-- `preset_id`
-- `particle_init`
-- `materials`
-- `solver_config`
-- `runtime`
-- `backend_requirements`
-- `cache_settings`
-- `visualization_hints`
-- `parameter_defaults`
+- scenario identity (`preset_id`, `spec_version`)
+- body setup (`body_configs`)
+- particle payload (`particle_init`)
+- materials/provenance (`materials`, `provenances`)
+- EOS and solver config (`eos_config`, `solver_config`)
+- runtime/timestep controls (`runtime`)
+- backend requirements (`backend_requirements`)
+- cache/output controls (`cache_settings`)
+- diagnostics controls (`diagnostics_config`)
+- settling controls (`settle_config`)
+- visualization hints (`visualization_hints`)
 
-This contract is intentionally explicit so that both presets and future node-graph compilers target the same runtime input.
+Presets must compile into this contract.
+Runtime executes this contract.
+Backends consume this contract.
+Future node-graph compilers should emit this contract.

@@ -1,29 +1,23 @@
 # PLAN
 
-## Phase 1 (completed): Foundation
+## Completed in this pass
 
-- [x] Establish repo boundaries (`addon/`, `sim_core/`, `backends/`, `presets/`, `io/`, `scripts/`, `tests/`)
-- [x] Add shared runtime and Warp backend vertical slice
-- [x] Add first preset (`moon_birth_theia`)
+- [x] Replace placeholder Moon Birth path with a real SPH+gravity impact path
+- [x] Add differentiated body initial-condition builder (core/mantle + provenance)
+- [x] Add pre-impact settling stage and resume-from-cache support
+- [x] Add adaptive timestep control in runtime loop
+- [x] Add debris diagnostics and run artifacts
+- [x] Keep architecture boundaries intact (preset -> SimulationSpec -> runtime -> backend)
 
-## Phase 2 (current): Harden architecture and continuity
+## Next
 
-- [x] Introduce neutral `SimulationSpec` contract
-- [x] Make presets compile to `SimulationSpec`
-- [x] Add second lightweight preset (`asteroid_belt_disruption`) using same plumbing
-- [x] Add structured run manifest + human-readable summary artifacts
-- [x] Add guardrail tests for boundary leakage and contract drift
-- [x] Add developer scripts for list/validate/scaffold/inspect/spec-print
-- [x] Document architecture and continuation rules in dedicated docs
+- [ ] Improve stability/perf for larger particle counts
+- [ ] Add optional gravity approximations beyond all-pairs
+- [ ] Add richer Blender viewport playback utilities
+- [ ] Add stricter JSON schema checks for diagnostics/manifest artifacts
 
-## Phase 3 (next): Controlled feature growth
+## Later
 
-- [ ] Add restart-from-snapshot runner
-- [ ] Add stronger parameter schema validation
-- [ ] Add solver/force strategy slots (SPH, neighbor policy, gravity model variants)
-- [ ] Add richer output channels and export adapters
-
-## Phase 4 (future): Node-authoring compatibility
-
-- [ ] Define node-compiler-to-`SimulationSpec` mapping contract
-- [ ] Keep runtime/backend unchanged while adding node-based authoring frontend
+- [ ] Table-backed EOS option (ANEOS-style architecture extension)
+- [ ] Replaceable SPH variants (e.g., PSPH/DISPH-like path)
+- [ ] Node-frontend compiler that emits `SimulationSpec`

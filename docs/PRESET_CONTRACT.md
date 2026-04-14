@@ -1,17 +1,13 @@
 # Preset Contract
 
-Presets implement `PresetPlugin` from `sim_core/contracts.py`.
-
-Required members:
+Presets implement `PresetPlugin` and must provide:
 
 - `meta: PresetMeta`
 - `default_config() -> PresetConfig`
 - `compile_spec(config) -> SimulationSpec`
 
-Presets must not:
+Rules:
 
-- import from `backends/`
-- call Warp directly
-- execute runtime loops
-
-Presets are scenario definitions only.
+- Presets author scenarios only.
+- Presets do not import Warp or backend modules.
+- Presets do not execute runtime stepping.

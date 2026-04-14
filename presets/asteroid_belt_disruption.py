@@ -12,6 +12,7 @@ from sim_core.contracts import (
     PresetConfig,
     PresetMeta,
     PresetPlugin,
+    ProvenanceDef,
     RuntimeSettings,
     SimulationSpec,
     VisualizationHints,
@@ -38,10 +39,16 @@ class AsteroidBeltDisruptionPreset(PresetPlugin):
                 "orbital_speed": 0.35,
                 "radial_jitter": 0.6,
                 "seed": 11,
-                "gravity_mu": 0.9,
+                "base_h": 0.25,
                 "dt": 0.04,
                 "default_steps": 30,
+                "dt_min": 0.01,
+                "dt_max": 0.05,
+                "cfl_factor": 0.35,
+                "accel_factor": 0.25,
+                "displacement_factor": 0.2,
                 "save_every": 3,
+                "diagnostics_every": 1,
                 "point_radius": 0.1,
             }
         )
@@ -59,37 +66,71 @@ class AsteroidBeltDisruptionPreset(PresetPlugin):
         positions: list[list[float]] = []
         velocities: list[list[float]] = []
         masses: list[float] = []
-        materials: list[str] = []
+        material_ids: list[int] = []
+        provenance_ids: list[int] = []
+        smoothing_lengths: list[float] = []
+        internal_energy: list[float] = []
 
         for _ in range(count):
             theta = rng.uniform(0.0, 2.0 * math.pi)
-            radius = rng.uniform(r_min, r_max)
-            radius += rng.uniform(-jitter, jitter)
+            radius = rng.uniform(r_min, r_max) + rng.uniform(-jitter, jitter)
             z = rng.uniform(-0.4, 0.4)
 
             x = radius * math.cos(theta)
             y = radius * math.sin(theta)
-
             tangent = [-math.sin(theta), math.cos(theta), 0.0]
-            vx = tangent[0] * speed
-            vy = tangent[1] * speed
 
             positions.append([x, y, z])
-            velocities.append([vx, vy, 0.0])
+            velocities.append([tangent[0] * speed, tangent[1] * speed, 0.0])
             masses.append(0.08)
-            materials.append("asteroid_rock")
+            material_ids.append(0)
+            provenance_ids.append(0)
+            smoothing_lengths.append(float(values["base_h"]))
+            internal_energy.append(0.4)
 
         return SimulationSpec(
             spec_version=SIMULATION_SPEC_VERSION,
             preset_id=self.meta.preset_id,
-            particle_init=ParticleInit(positions=positions, velocities=velocities, masses=masses, materials=materials),
-            materials=[MaterialDef(material_id="asteroid_rock", display_name="Asteroid Rock")],
-            solver_config={"gravity_model": "central", "gravity_mu": float(values["gravity_mu"])},
-            runtime=RuntimeSettings(dt=float(values["dt"]), default_steps=int(values["default_steps"])),
-            backend_requirements=BackendRequirements(backend="warp", features=("particles", "gravity")),
+            body_configs=[],
+            particle_init=ParticleInit(
+                positions=positions,
+                velocities=velocities,
+                masses=masses,
+                material_ids=material_ids,
+                provenance_ids=provenance_ids,
+                smoothing_lengths=smoothing_lengths,
+                internal_energy=internal_energy,
+            ),
+            materials=[
+                MaterialDef(material_id=0, name="asteroid_rock", eos_model="tait", eos_params={"k": 6.0, "gamma": 6.0})
+            ],
+            provenances=[ProvenanceDef(provenance_id=0, name="asteroid_belt")],
+            eos_config={"model": "analytic_tait", "table_ready": True},
+            solver_config={
+                "mode": "giant_impact_sph",
+                "gravity_model": "all_pairs_softened",
+                "gravity_softening": 0.12,
+                "sph_stiffness": 6.0,
+                "artificial_viscosity": 0.8,
+            },
+            runtime=RuntimeSettings(
+                dt=float(values["dt"]),
+                default_steps=int(values["default_steps"]),
+                dt_min=float(values["dt_min"]),
+                dt_max=float(values["dt_max"]),
+                cfl_factor=float(values["cfl_factor"]),
+                accel_factor=float(values["accel_factor"]),
+                displacement_factor=float(values["displacement_factor"]),
+            ),
+            backend_requirements=BackendRequirements(backend="warp", features=("sph_density", "self_gravity")),
             cache_settings=CacheSettings(
-                save_every=int(values["save_every"]), cache_format="json", include_velocity=True
+                save_every=int(values["save_every"]),
+                cache_format="json",
+                include_velocity=True,
+                diagnostics_every=int(values["diagnostics_every"]),
             ),
             visualization_hints=VisualizationHints(point_radius=float(values["point_radius"]), color_mode="material"),
+            diagnostics_config={"roche_limit": 2.5, "central_radius_estimate": 1.0},
+            settle_config={"steps": 0, "damping": 1.0, "cache": False},
             parameter_defaults=dict(values),
         )

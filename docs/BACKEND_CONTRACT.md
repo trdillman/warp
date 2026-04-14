@@ -1,11 +1,16 @@
 # Backend Contract
 
-Backends implement `BackendAdapter` from `sim_core/contracts.py`.
-
-Required methods:
+Backends implement `BackendAdapter` and must provide:
 
 - `initialize(spec)`
-- `step(runtime_state, dt)`
+- `initialize_from_state(spec, state)`
+- `settle(runtime_state, spec)`
+- `step(runtime_state, dt) -> step_stats`
 - `snapshot(runtime_state, frame, time)`
 
-Backend code belongs in `backends/<name>/` and should not leak into `presets/` or `addon/`.
+Current Warp backend provides:
+
+- SPH density/pressure kernels
+- neighbor search via HashGrid
+- softened all-pairs gravity
+- integration + per-step dt stats

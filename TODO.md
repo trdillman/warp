@@ -2,19 +2,18 @@
 
 ## Immediate
 
-- [ ] Add `scripts/restart_run.py` for resume-from-cache workflow
-- [ ] Add stricter per-preset parameter validation hooks
-- [ ] Add JSON schema check script for run manifests
-- [ ] Add Blender operator for snapshot inspection/import
+- [ ] Add script to resume from latest snapshot automatically
+- [ ] Add diagnostics plotting helper script
+- [ ] Add optional per-preset override file loading (JSON/YAML)
 
 ## Near-term
 
-- [ ] Add force/solver strategy interface stubs in `sim_core/` (no heavy physics yet)
-- [ ] Add material registry expansion for future EOS/table lookup paths
-- [ ] Add benchmark/diagnostic script for repeatable runtime comparisons
+- [ ] Add guardrail test for diagnostics field schema
+- [ ] Add stronger settling convergence metric and report
+- [ ] Add configurable particle sampler options (lattice/stratified/random)
 
 ## Later
 
-- [ ] Prepare node-compiler integration contract that outputs `SimulationSpec`
-- [ ] Add binary cache format option while preserving schema versioning
-- [ ] Add richer visual export tooling (USD/geo channels)
+- [ ] Add scalable gravity strategy interface implementations
+- [ ] Add table-backed EOS plugin implementation
+- [ ] Add node-authoring frontend that compiles to `SimulationSpec`

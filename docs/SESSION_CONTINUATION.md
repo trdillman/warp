@@ -1,10 +1,14 @@
 # Session Continuation
 
-Before coding in a fresh session:
+1. Read `START_HERE.md`, `README.md`, `ARCHITECTURE.md`, `DECISIONS.md`.
+2. Validate Moon Birth preset and run short headless sim.
+3. Inspect cache and diagnostics artifacts.
+4. Run the unittest set.
+5. If changing architecture, update `DECISIONS.md` and related docs in same commit.
 
-1. Read `START_HERE.md`, `ARCHITECTURE.md`, and `DECISIONS.md`.
-2. Run `scripts/list_presets.py` and `scripts/validate_preset.py moon_birth_theia`.
-3. Run one headless preset execution and inspect outputs.
-4. Update `PLAN.md`, `TODO.md`, `DECISIONS.md`, and `NOTES.md` when you change architecture.
+Priority next sessions:
 
-Do not redesign core contracts unless you record the concrete flaw and reason.
+- stability/perf tuning
+- diagnostics tooling
+- restart ergonomics
+- only then fidelity upgrades (EOS/gravity)

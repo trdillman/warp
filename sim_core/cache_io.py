@@ -12,7 +12,11 @@ REQUIRED_KEYS = {
     "positions",
     "velocities",
     "masses",
-    "materials",
+    "densities",
+    "internal_energy",
+    "smoothing_lengths",
+    "material_ids",
+    "provenance_ids",
 }
 
 
@@ -39,11 +43,12 @@ def validate_snapshot_payload(payload: dict) -> None:
         raise CacheValidationError("Snapshot time must be numeric.")
 
     particle_count = len(payload["positions"])
-    if len(payload["velocities"]) != particle_count or len(payload["masses"]) != particle_count:
-        raise CacheValidationError("positions, velocities, and masses must have matching lengths.")
+    vector_keys = ["velocities"]
+    scalar_keys = ["masses", "densities", "internal_energy", "smoothing_lengths", "material_ids", "provenance_ids"]
 
-    if len(payload["materials"]) != particle_count:
-        raise CacheValidationError("materials length must match positions length.")
+    for key in vector_keys + scalar_keys:
+        if len(payload[key]) != particle_count:
+            raise CacheValidationError(f"{key} length must match positions length.")
 
 
 def write_snapshot(path: Path, state: SimulationState) -> None:
@@ -57,7 +62,11 @@ def write_snapshot(path: Path, state: SimulationState) -> None:
         "positions": state.positions,
         "velocities": state.velocities,
         "masses": state.masses,
-        "materials": state.materials,
+        "densities": state.densities,
+        "internal_energy": state.internal_energy,
+        "smoothing_lengths": state.smoothing_lengths,
+        "material_ids": state.material_ids,
+        "provenance_ids": state.provenance_ids,
     }
     validate_snapshot_payload(payload)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -75,5 +84,9 @@ def read_snapshot(path: Path) -> SimulationState:
         positions=payload["positions"],
         velocities=payload["velocities"],
         masses=payload["masses"],
-        materials=payload["materials"],
+        densities=payload["densities"],
+        internal_energy=payload["internal_energy"],
+        smoothing_lengths=payload["smoothing_lengths"],
+        material_ids=payload["material_ids"],
+        provenance_ids=payload["provenance_ids"],
     )

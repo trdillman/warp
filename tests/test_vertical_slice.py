@@ -6,36 +6,38 @@ from pathlib import Path
 
 from sim_core.app import create_runtime
 from sim_core.cache_io import read_snapshot
-from sim_core.contracts import SIMULATION_SPEC_VERSION, SimulationRunRequest
+from sim_core.contracts import CACHE_SCHEMA_VERSION, SIMULATION_SPEC_VERSION, SimulationRunRequest
 
 
 class TestVerticalSlice(unittest.TestCase):
-    def test_runtime_compiles_and_runs_moon_birth_spec(self):
+    def test_moon_birth_spec_and_run_outputs(self):
         runtime = create_runtime("warp")
         spec = runtime.compile_spec("moon_birth_theia")
 
         self.assertEqual(spec.spec_version, SIMULATION_SPEC_VERSION)
         self.assertEqual(spec.preset_id, "moon_birth_theia")
-        self.assertGreater(len(spec.particle_init.positions), 0)
+        self.assertEqual(spec.solver_config.get("mode"), "giant_impact_sph")
+        self.assertGreater(len(spec.body_configs), 1)
 
         with tempfile.TemporaryDirectory() as tmp:
             request = SimulationRunRequest(
                 preset_id="moon_birth_theia",
-                steps=6,
-                dt=0.02,
+                steps=12,
+                dt=0.008,
                 output_dir=tmp,
-                save_every=2,
+                save_every=4,
             )
             snapshots = runtime.run(request)
 
             self.assertEqual(len(snapshots), 3)
-            for path in snapshots:
-                self.assertTrue(path.exists())
+            state = read_snapshot(Path(snapshots[-1]))
+            self.assertEqual(state.schema_version, CACHE_SCHEMA_VERSION)
+            self.assertEqual(len(state.positions), len(state.material_ids))
+            self.assertEqual(len(state.positions), len(state.provenance_ids))
+            self.assertGreater(max(state.densities), 0.0)
 
-            last_state = read_snapshot(Path(snapshots[-1]))
-            self.assertEqual(last_state.frame, 6)
-            self.assertEqual(len(last_state.positions), len(last_state.velocities))
-            self.assertGreater(len(last_state.positions), 0)
+            diagnostics = sorted((Path(tmp) / "diagnostics").glob("*.json"))
+            self.assertGreaterEqual(len(diagnostics), 1)
 
             run_dirs = list((Path(tmp) / "runs").glob("*"))
             self.assertEqual(len(run_dirs), 1)

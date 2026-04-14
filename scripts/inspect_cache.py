@@ -21,7 +21,10 @@ def main() -> None:
     print(f"frame={snapshot.frame}")
     print(f"time={snapshot.time}")
     print(f"particle_count={len(snapshot.positions)}")
-    print(f"materials={sorted(set(snapshot.materials))}")
+    print(f"density_range=({min(snapshot.densities):.4f},{max(snapshot.densities):.4f})")
+    print(f"energy_range=({min(snapshot.internal_energy):.4f},{max(snapshot.internal_energy):.4f})")
+    print(f"material_ids={sorted(set(snapshot.material_ids))}")
+    print(f"provenance_ids={sorted(set(snapshot.provenance_ids))}")
 
 
 if __name__ == "__main__":

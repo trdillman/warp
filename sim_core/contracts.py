@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-SIMULATION_SPEC_VERSION = "sim_spec_v1"
-CACHE_SCHEMA_VERSION = "cache_snapshot_v1"
+SIMULATION_SPEC_VERSION = "sim_spec_v2"
+CACHE_SCHEMA_VERSION = "cache_snapshot_v2"
 
 
 @dataclass(frozen=True)
@@ -16,7 +16,7 @@ class PresetMeta:
     description: str
     tags: tuple[str, ...] = ()
     category: str = "cinematic"
-    contract_version: str = "preset_v1"
+    contract_version: str = "preset_v2"
 
 
 @dataclass
@@ -32,6 +32,11 @@ class RuntimeSettings:
 
     dt: float
     default_steps: int
+    dt_min: float
+    dt_max: float
+    cfl_factor: float
+    accel_factor: float
+    displacement_factor: float
 
 
 @dataclass(frozen=True)
@@ -50,6 +55,7 @@ class CacheSettings:
     save_every: int = 1
     cache_format: str = "json"
     include_velocity: bool = True
+    diagnostics_every: int = 1
 
 
 @dataclass(frozen=True)
@@ -57,15 +63,44 @@ class VisualizationHints:
     """Optional visualization hints for Blender and offline tools."""
 
     point_radius: float = 0.1
-    color_mode: str = "material"
+    color_mode: str = "provenance"
 
 
 @dataclass
 class MaterialDef:
-    """Simple material reference object used by particle initialization."""
+    """Material definition including EOS parameters."""
 
-    material_id: str
-    display_name: str
+    material_id: int
+    name: str
+    eos_model: str
+    eos_params: dict[str, float]
+
+
+@dataclass
+class ProvenanceDef:
+    """Source-body provenance definitions for diagnostics and visualization."""
+
+    provenance_id: int
+    name: str
+
+
+@dataclass
+class BodyInitConfig:
+    """Initial condition body definition for differentiated spheroids."""
+
+    body_id: str
+    particle_count: int
+    radius: float
+    core_fraction: float
+    core_density: float
+    mantle_density: float
+    position: list[float]
+    velocity: list[float]
+    spin: list[float]
+    core_material_id: int
+    mantle_material_id: int
+    core_provenance_id: int
+    mantle_provenance_id: int
 
 
 @dataclass
@@ -75,7 +110,10 @@ class ParticleInit:
     positions: list[list[float]]
     velocities: list[list[float]]
     masses: list[float]
-    materials: list[str]
+    material_ids: list[int]
+    provenance_ids: list[int]
+    smoothing_lengths: list[float]
+    internal_energy: list[float]
 
 
 @dataclass
@@ -84,13 +122,18 @@ class SimulationSpec:
 
     spec_version: str
     preset_id: str
+    body_configs: list[BodyInitConfig]
     particle_init: ParticleInit
     materials: list[MaterialDef]
+    provenances: list[ProvenanceDef]
+    eos_config: dict[str, Any]
     solver_config: dict[str, Any]
     runtime: RuntimeSettings
     backend_requirements: BackendRequirements
     cache_settings: CacheSettings
     visualization_hints: VisualizationHints
+    diagnostics_config: dict[str, Any]
+    settle_config: dict[str, Any]
     parameter_defaults: dict[str, Any] = field(default_factory=dict)
 
 
@@ -104,7 +147,11 @@ class SimulationState:
     positions: list[list[float]]
     velocities: list[list[float]]
     masses: list[float]
-    materials: list[str]
+    densities: list[float]
+    internal_energy: list[float]
+    smoothing_lengths: list[float]
+    material_ids: list[int]
+    provenance_ids: list[int]
 
 
 @dataclass
@@ -116,6 +163,7 @@ class SimulationRunRequest:
     dt: float | None = None
     output_dir: str = "/tmp/astrosim"
     save_every: int | None = None
+    resume_snapshot: str | None = None
 
 
 class BackendAdapter(Protocol):
@@ -126,8 +174,14 @@ class BackendAdapter(Protocol):
     def initialize(self, spec: SimulationSpec) -> Any:
         """Return backend-owned runtime buffers from a backend-agnostic spec."""
 
-    def step(self, runtime_state: Any, dt: float) -> None:
-        """Advance runtime state by one step."""
+    def initialize_from_state(self, spec: SimulationSpec, state: SimulationState) -> Any:
+        """Return backend-owned runtime buffers from a cached simulation state."""
+
+    def settle(self, runtime_state: Any, spec: SimulationSpec) -> None:
+        """Apply pre-impact settling/relaxation for initialized bodies."""
+
+    def step(self, runtime_state: Any, dt: float) -> dict[str, float]:
+        """Advance runtime state by one step and return step diagnostics."""
 
     def snapshot(self, runtime_state: Any, frame: int, time: float) -> SimulationState:
         """Return a serializable snapshot from backend runtime buffers."""

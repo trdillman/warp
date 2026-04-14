@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -41,27 +42,35 @@ class TestArchitectureGuardrails(unittest.TestCase):
             "positions": [[0.0, 0.0, 0.0]],
             "velocities": [[0.0, 0.0, 0.0]],
             "masses": [1.0],
-            "materials": ["m"],
+            "densities": [1.0],
+            "internal_energy": [0.0],
+            "smoothing_lengths": [0.1],
+            "material_ids": [0],
+            "provenance_ids": [0],
         }
         validate_snapshot_payload(payload)
 
-        payload_bad = dict(payload)
-        payload_bad["schema_version"] = "old"
+        bad = dict(payload)
+        bad["schema_version"] = "old"
         with self.assertRaises(CacheValidationError):
-            validate_snapshot_payload(payload_bad)
+            validate_snapshot_payload(bad)
 
-    def test_second_preset_runs_through_same_runtime_path(self):
+    def test_diagnostics_artifact_written(self):
         runtime = create_runtime("warp")
         with tempfile.TemporaryDirectory() as tmp:
             request = SimulationRunRequest(
-                preset_id="asteroid_belt_disruption",
-                steps=4,
-                dt=0.02,
+                preset_id="moon_birth_theia",
+                steps=8,
+                dt=0.008,
                 output_dir=tmp,
-                save_every=2,
+                save_every=4,
             )
-            snapshots = runtime.run(request)
-            self.assertEqual(len(snapshots), 2)
+            runtime.run(request)
+            diagnostics_files = sorted((Path(tmp) / "diagnostics").glob("*.json"))
+            self.assertGreater(len(diagnostics_files), 0)
+            data = json.loads(diagnostics_files[-1].read_text(encoding="utf-8"))
+            self.assertIn("bound_circumterrestrial_mass", data)
+            self.assertIn("escaping_mass", data)
 
 
 if __name__ == "__main__":

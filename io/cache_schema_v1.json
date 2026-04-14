@@ -1,15 +1,31 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AstroSim Cache Snapshot v1",
+  "title": "AstroSim Cache Snapshot v2",
   "type": "object",
-  "required": ["schema_version", "frame", "time", "positions", "velocities", "masses", "materials"],
+  "required": [
+    "schema_version",
+    "frame",
+    "time",
+    "positions",
+    "velocities",
+    "masses",
+    "densities",
+    "internal_energy",
+    "smoothing_lengths",
+    "material_ids",
+    "provenance_ids"
+  ],
   "properties": {
-    "schema_version": {"type": "string", "const": "cache_snapshot_v1"},
+    "schema_version": {"type": "string", "const": "cache_snapshot_v2"},
     "frame": {"type": "integer", "minimum": 0},
     "time": {"type": "number"},
     "positions": {"type": "array"},
     "velocities": {"type": "array"},
     "masses": {"type": "array"},
-    "materials": {"type": "array", "items": {"type": "string"}}
+    "densities": {"type": "array"},
+    "internal_energy": {"type": "array"},
+    "smoothing_lengths": {"type": "array"},
+    "material_ids": {"type": "array"},
+    "provenance_ids": {"type": "array"}
   }
 }

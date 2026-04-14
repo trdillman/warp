@@ -2,36 +2,26 @@
 
 ## D-001: Keep Blender thin
 
-Blender code (`addon/`) is a shell that builds requests and calls `sim_core` entrypoints.
+Blender code builds requests and calls `sim_core` entrypoints only.
 
-Reason: preserves headless execution and prevents UI-driven architecture drift.
+## D-002: Presets compile to SimulationSpec
 
-## D-002: Presets are plugins, not mini-addons
+Presets are scenario definitions; they do not execute backend logic directly.
 
-Presets implement one shared `PresetPlugin` contract and register into one shared registry.
+## D-003: Moon Birth now uses real SPH+gravity path
 
-Reason: avoids per-preset bespoke plumbing and ensures coherent long-lived architecture.
+The `moon_birth_theia` preset now runs neighbor-search hydrodynamics, softened self-gravity, adaptive dt, settling, and diagnostics.
 
-## D-003: Backend boundary is explicit
+Reason: move from scaffold placeholder to first actual cinematic giant-impact behavior.
 
-Compute implementation is isolated behind `BackendAdapter`.
+## D-004: EOS is analytic and table-ready
 
-Reason: enables backend swaps/variants with clear contracts.
+Use analytic Tait-like EOS now; keep interface ready for future table-backed EOS.
 
-## D-004: File-backed state first
+Reason: deliver a working VFX model without pretending scientific ANEOS completeness.
 
-Snapshots and run metadata are explicit files (`cache_snapshot_v1`, `run_manifest_v1`).
+## D-005: Diagnostics are explicit and honest
 
-Reason: restartability, inspectability, and continuation safety.
+Diagnostics use simple energy/radius classification and are documented as approximate.
 
-## D-005: SimulationSpec is the neutral IR
-
-All presets now compile into `SimulationSpec`, and runtime executes specs rather than preset-owned runtime logic.
-
-Reason: keeps architecture stable and preserves future node-graph compatibility.
-
-## D-006: No backend imports in addon or presets
-
-`addon/` and `presets/` must not import from `backends/`.
-
-Reason: protects boundary clarity and prevents architectural leakage.
+Reason: support VFX plausibility checks while avoiding false scientific claims.
